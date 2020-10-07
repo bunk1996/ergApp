@@ -1,121 +1,98 @@
-import React from 'react';
+import React from "react";
 // import ImageUploader from 'react-images-upload';
-//import logo from './logo.svg';
-import logo from './rowers2.jpg'
-import './app.scss'
+import loginImg from "./Img/loginImg.svg";
+import "./scss/app.scss";
 //import $ from 'jquery';
-import axios from 'axios'
+import axios from "axios";
 //import { render } from '@testing-library/react';
-
 class App extends React.Component {
-  
   constructor(props) {
     super(props);
-      this.state = { user : ''};
-      this.state = { pictures: [] };
-      this.state = {base64TextString : ''}
+    this.state = {
+      r: 70,
+      b: -20,
+      rUD: "D",
+      bUD: "D",
+      deg: 150,
+    };
   }
+  updateColours() {
+    if (this.state.b < -20 || this.state.bUD === "U") {
+      this.setState({ bUD: "U" });
+      var bChange = Math.floor(Math.random() * 2) * 0.1;
+    }
+    if (this.state.b > 100 || this.state.bUD === "D") {
+      this.setState({ bUD: "D" });
+      var bChange = -Math.floor(Math.random() * 2) * 0.1;
+    }
 
-  _handleReaderLoaded = (readerEvt) => {
-    let binaryString = readerEvt.target.result
+    if (this.state.r < 0 || this.state.rUD === "U") {
+      this.setState({ rUD: "U" });
+      var rChange = Math.floor(Math.random() * 2) * 0.1;
+    }
+    if (this.state.r > 100 || this.state.rUD === "D") {
+      this.setState({ rUD: "D" });
+      var rChange = -Math.floor(Math.random() * 2) * 0.1;
+    }
+    var plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+    var degChange = 0.01;
+
+    if (Math.abs(this.state.b - this.state.r) < 50) {
+      this.setState({ rUD: "U", bUD: "D" });
+    }
+
     this.setState({
-      base64TextString: btoa(binaryString)
-    })
-    if (this.state.base64TextString.length === 0) {
-      this.setState({
-        base64TextString: btoa(binaryString)
-      })
-    }
-  }
-
-  onChange=(e)=> {
-
-    console.log("file to upload", e.target.files[0]);
-    let file = e.target.files[0];
-
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onload = this._handleReaderLoaded.bind(this);
-
-      reader.readAsBinaryString(file);
-    }
-
-    
-  }
- 
-
-  handleChange=(e)=> { 
-    this.setState(
-      {user: e.target.value},
-      );  
-  }
-
-  onClickHandler=(e)=>{
-    var url = '/api/' + String(this.state.user)
-    axios.post('/api', {
-      imageb64string: this.state.base64TextString
-    })
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
+      r: this.state.r + rChange,
+      b: this.state.b + bChange,
+      deg: this.state.deg + degChange,
     });
-    console.log(this.state.user)
+  }
+  componentDidMount() {
+    this.interval = setInterval(() => this.updateColours(), 10);
+  }
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
-  title=()=>{
-    return(
-      <div>
-        <header>
-          This is another style
-        </header>
-        <h1>
-          Welcome to ErgVision
-        </h1>
-        {/* <img src={logo} alt="Logo"/>; */}
-        <h3>
-          This is a new way to trace and track your training alongside your teammates. 
-        </h3>
-      </div>
-    )
-  }
+  render() {
+    const loginScreen = {
+      background:
+        "linear-gradient(" +
+        this.state.deg +
+        "deg, rgb(15, 68, 167) " +
+        this.state.b +
+        "%, rgb(173,216,230) " +
+        this.state.r +
+        "%",
+    };
 
-  buttons=()=>{
-    
     return (
-    <div>
-      <div>
-      <input value={this.state.user} placeholder="User Name" onChange={this.handleChange}></input>
-      </div>
-      <div>
-        <button onClick={this.onClickHandler}>Upload</button>
-        
-      </div>
-      </div>
-    
-    )
-  }
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col col-lg-3 loginBar">
+            <h1>ErgVision</h1>
+            <form className="form-group">
+              <label for="username-input">Username</label>
+              <input
+                type="email"
+                class="form-control"
+                id="username-input"
+                aria-describedby="emailHelp"
+                placeholder="Enter username"
+              />
+              <label for="club-input">Club</label>
+              <select class="form-control" id="club-input">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+            </form>
+          </div>
 
-  imageUpload=()=>{
-    return(
-    <form onChange={(e) => this.onChange(e)}>
-      <input
-      type = "file"
-      name = "image"
-      id = "file"
-      accept = ".jpeg,. png, .jpg"
-      />
-    </form>
-    )
-  }  
-  render(){
-    return(
-      <div>
-        <this.title/>
-        <this.imageUpload/>
-        <this.buttons/>
+          <div className="col d-flex loginScreen" style={loginScreen}></div>
+        </div>
       </div>
     );
   }

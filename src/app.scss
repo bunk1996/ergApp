@@ -1,15 +1,12 @@
-$myColor: green;
-
-
-header {
-    
-    color: white
+.loginBar {
+  height: 100vh;
+  background: lightgrey;
+  padding: 2em !important;
 }
-
-h1 {
-  color: $myColor;
-}
-
-p {
-    color : blue
+.loginImage {
+  height: 100vh;
+  img {
+    min-width: 800px;
+    min-height: 351px;
+  }
 }
